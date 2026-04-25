@@ -67,6 +67,37 @@ input, textarea, button, select { font-family: 'Outfit', sans-serif; }
 .dream-layer .desc { margin-left: auto; font-size: 11px; color: #94a3b8; }
 .signoff { background: #f1f5f9; border-radius: 10px; padding: 16px; text-align: center; margin-top: 16px; }
 .colophon { font-size: 10px; color: #94a3b8; line-height: 1.6; background: #f1f5f9; border-radius: 8px; padding: 12px; margin-top: 20px; }
+.checklist { background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 10px; padding: 10px 12px; margin-bottom: 14px; }
+.checklist-header { display: flex; justify-content: space-between; align-items: center; font-size: 12px; font-weight: 700; color: #065f46; margin-bottom: 6px; }
+.checklist-header .prog { font-family: monospace; font-size: 11px; background: #fff; padding: 2px 6px; border-radius: 10px; border: 1px solid #a7f3d0; }
+.check-item { display: flex; align-items: center; gap: 7px; font-size: 11px; padding: 3px 0; color: #475569; line-height: 1.3; }
+.check-item.done { color: #059669; }
+.check-box { display: inline-flex; align-items: center; justify-content: center; width: 14px; height: 14px; border-radius: 4px; border: 1.5px solid #cbd5e1; font-size: 10px; line-height: 1; background: #fff; flex-shrink: 0; font-weight: 700; }
+.check-item.done .check-box { background: #059669; border-color: #059669; color: #fff; }
+.synopsis { background: #fff; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 14px; margin: 14px 0; }
+.synopsis-title { font-size: 13px; font-weight: 700; color: #1e293b; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+.synopsis-sub { font-size: 11px; color: #64748b; margin-bottom: 10px; }
+.syn-row { display: flex; align-items: center; gap: 8px; padding: 7px 4px; border-radius: 6px; cursor: pointer; font-size: 12px; border-bottom: 1px solid #f1f5f9; }
+.syn-row:last-child { border-bottom: none; }
+.syn-row:active { background: #f1f5f9; }
+.syn-status { width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; border: 1.5px solid #cbd5e1; color: #cbd5e1; flex-shrink: 0; font-weight: 700; background: #fff; }
+.syn-row.done .syn-status { background: #059669; border-color: #059669; color: #fff; }
+.syn-label { flex: 1; color: #1e293b; font-weight: 500; }
+.syn-row.done .syn-label { color: #059669; font-weight: 600; }
+.syn-prog { font-size: 10px; color: #94a3b8; font-weight: 700; font-family: monospace; background: #f1f5f9; padding: 2px 6px; border-radius: 10px; }
+.syn-row.done .syn-prog { color: #059669; background: #ecfdf5; }
+.syn-overall { font-size: 11px; color: #64748b; margin-top: 10px; padding-top: 10px; border-top: 1px solid #e2e8f0; text-align: center; }
+.syn-overall strong { color: #059669; font-size: 13px; }
+.syn-bar { height: 6px; background: #f1f5f9; border-radius: 3px; margin-top: 8px; overflow: hidden; }
+.syn-bar-fill { height: 100%; background: #059669; transition: width 0.3s ease; }
+.cb-row { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; background: #fff; border: 1.5px solid #e2e8f0; border-radius: 8px; margin-bottom: 6px; cursor: pointer; user-select: none; transition: background 0.15s, border-color 0.15s; }
+.cb-row.checked { background: #ecfdf5; border-color: #a7f3d0; }
+.cb-box { width: 20px; height: 20px; border: 2px solid #cbd5e1; border-radius: 5px; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; background: #fff; }
+.cb-row.checked .cb-box { background: #059669; border-color: #059669; color: #fff; }
+.cb-label { font-size: 12px; color: #1e293b; line-height: 1.4; }
+.cb-row.checked .cb-label { color: #065f46; font-weight: 600; }
+.cb-group-title { font-size: 12px; font-weight: 700; color: #1e293b; margin: 12px 0 6px; }
+.cb-group-sub { font-size: 11px; color: #64748b; margin-bottom: 8px; font-style: italic; }
 </style>
 </head>
 <body>
@@ -88,7 +119,137 @@ function save() {
   if (el) { el.classList.add("show"); clearTimeout(savedTimeout); savedTimeout = setTimeout(() => el.classList.remove("show"), 1500); }
 }
 
-function set(key, val) { data[key] = val; save(); }
+function set(key, val) { data[key] = val; save(); updateChecklists(); }
+
+// ─── REQUIREMENTS CHECKLIST CONFIG ───
+const requirements = [
+  { id: "1a", title: "Req 1a — Game Elements", pageId: "a1", checks: [
+    { label: "Game title chosen", fields: ["a1_title"] },
+    { label: "Medium identified", fields: ["a1_medium"] },
+    { label: "Objects listed", fields: ["a1_objects"] },
+    { label: "Actions listed", fields: ["a1_actions"] },
+    { label: "Play Space described", fields: ["a1_playSpace"] },
+    { label: "Players described", fields: ["a1_players"] },
+    { label: "Goals listed", fields: ["a1_goals"] },
+    { label: "Rules listed", fields: ["a1_rules"] },
+    { label: "Group discussion noted", fields: ["a1_discussion"] },
+  ]},
+  { id: "2", title: "Req 2 — Design Terms", pageId: "a2", checks: [
+    { label: "Term 1 (term + game + how)", fields: ["a2_t1_term","a2_t1_game","a2_t1_how"] },
+    { label: "Term 2 (term + game + how)", fields: ["a2_t2_term","a2_t2_game","a2_t2_how"] },
+    { label: "Term 3 (term + game + how)", fields: ["a2_t3_term","a2_t3_game","a2_t3_how"] },
+    { label: "Term 4 (term + game + how)", fields: ["a2_t4_term","a2_t4_game","a2_t4_how"] },
+    { label: "Term 5 (term + game + how)", fields: ["a2_t5_term","a2_t5_game","a2_t5_how"] },
+  ]},
+  { id: "4", title: "Req 4 — Rule Hacking", pageId: "a3", checks: [
+    { label: "Rule Change 1 (predict + result + feeling)", fields: ["a3_r1_predict","a3_r1_result","a3_r1_feeling"] },
+    { label: "Rule Change 2 (predict + result + feeling)", fields: ["a3_r2_predict","a3_r2_result","a3_r2_feeling"] },
+    { label: "Rule Change 3 (predict + result + feeling)", fields: ["a3_r3_predict","a3_r3_result","a3_r3_feeling"] },
+  ]},
+  { id: "5", title: "Req 5 — Design Your Game", pageId: "a4", checks: [
+    { label: "Vision Statement", fields: ["a4_vision"] },
+    { label: "Game basics (name, players, medium, time)", fields: ["a4_name","a4_players","a4_medium","a4_time"] },
+    { label: "Theme defined", fields: ["a4_theme"] },
+    { label: "Player experience goal selected", fields: ["a4_goals"] },
+    { label: "Core loop — all 5 steps", fields: ["a4_loop0","a4_loop1","a4_loop2","a4_loop3","a4_loop4"] },
+    { label: "Rules listed", fields: ["a4_rules"] },
+    { label: "Resources listed", fields: ["a4_resources"] },
+  ]},
+  { id: "6", title: "Req 6 — Playtest Log", pageId: "pt", checks: [
+    { label: "Playtest Round 1 complete", fields: ["pt1_players","pt1_worked","pt1_broken","pt1_changed","pt1_why","pt1_after"] },
+    { label: "Playtest Round 2 complete", fields: ["pt2_players","pt2_worked","pt2_broken","pt2_changed","pt2_why","pt2_after"] },
+    { label: "Playtest Round 3 complete", fields: ["pt3_players","pt3_worked","pt3_broken","pt3_changed","pt3_why","pt3_after"] },
+  ]},
+  { id: "7", title: "Req 7 — Blind Test", pageId: "bt", checks: [
+    { label: "Setup instructions", fields: ["bt_setup"] },
+    { label: "Play instructions", fields: ["bt_play"] },
+    { label: "Win / End condition", fields: ["bt_win"] },
+    { label: "Game objectives", fields: ["bt_objectives"] },
+    { label: "Observed misunderstandings", fields: ["bt_misunderstand"] },
+    { label: "Observed unexpected actions", fields: ["bt_unexpected"] },
+    { label: "Observed where they got stuck", fields: ["bt_stuck"] },
+    { label: "Most fun moment noted", fields: ["bt_fun"] },
+    { label: "What I like most", fields: ["bt_like"] },
+    { label: "One change I'd make", fields: ["bt_change"] },
+  ]},
+  { id: "8b", title: "Req 8b — Reflection", pageId: "ref", checks: [
+    { label: "Learning #1", fields: ["reflect1"] },
+    { label: "Learning #2", fields: ["reflect2"] },
+    { label: "Learning #3", fields: ["reflect3"] },
+  ]},
+  { id: "1b", title: "Req 1b — Play Value Types (Plan B)", pageId: "pb", checks: [
+    { label: "Play Value Type 1", fields: ["pb_pv1_type","pb_pv1_game"] },
+    { label: "Play Value Type 2", fields: ["pb_pv2_type","pb_pv2_game"] },
+    { label: "Play Value Type 3", fields: ["pb_pv3_type","pb_pv3_game"] },
+    { label: "Play Value Type 4", fields: ["pb_pv4_type","pb_pv4_game"] },
+  ]},
+  { id: "3", title: "Req 3 — Intellectual Property (Plan B)", pageId: "pb", checks: [
+    { label: "Definition of IP", fields: ["pb_ip_def"] },
+    { label: "Three types of IP in games", fields: ["pb_ip_types"] },
+    { label: "Why IP protection is necessary", fields: ["pb_ip_why"] },
+    { label: "Licensed property example", fields: ["pb_ip_example"] },
+    { label: "Heard: infringement vs. fair use", fields: ["pb_ip_chk_fair"] },
+    { label: "Heard: consequences of infringement", fields: ["pb_ip_chk_conseq"] },
+    { label: "Heard: can I copy other people's ideas?", fields: ["pb_ip_chk_copying"] },
+  ]},
+];
+
+function isFilled(f) { const v = data[f]; if (typeof v === "boolean") return v; return ((v ?? "") + "").trim().length > 0; }
+function checkbox(key, label) {
+  const checked = !!data[key];
+  return `<div class="cb-row${checked ? " checked" : ""}" onclick="toggleCheck('${key}')"><span class="cb-box">${checked ? "✓" : ""}</span><span class="cb-label">${label}</span></div>`;
+}
+function toggleCheck(key) { data[key] = !data[key]; save(); render(); }
+function checkDone(c) { return c.fields.every(isFilled); }
+function reqStats(r) { const d = r.checks.filter(checkDone).length; return { done: d, total: r.checks.length, complete: d === r.checks.length }; }
+function pageIndexOf(id) { return pages.findIndex(p => p.id === id); }
+
+function renderChecklistInner(reqId) {
+  const r = requirements.find(x => x.id === reqId);
+  if (!r) return "";
+  const s = reqStats(r);
+  return `<div class="checklist-header"><span>${r.title}</span><span class="prog">${s.done}/${s.total}${s.complete ? " ✓" : ""}</span></div>` +
+    r.checks.map(c => {
+      const done = checkDone(c);
+      return `<div class="check-item${done ? " done" : ""}"><span class="check-box">${done ? "✓" : ""}</span><span>${c.label}</span></div>`;
+    }).join("");
+}
+
+function renderChecklist(reqIds) {
+  const ids = Array.isArray(reqIds) ? reqIds : [reqIds];
+  return ids.map(id => `<div class="checklist" data-checklist="${id}">${renderChecklistInner(id)}</div>`).join("");
+}
+
+function renderSynopsisInner() {
+  let totalDone = 0, totalChecks = 0;
+  const rows = requirements.map(r => {
+    const s = reqStats(r);
+    totalDone += s.done; totalChecks += s.total;
+    return `<div class="syn-row${s.complete ? " done" : ""}" onclick="goTo(${pageIndexOf(r.pageId)})">
+      <span class="syn-status">${s.complete ? "✓" : ""}</span>
+      <span class="syn-label">${r.title}</span>
+      <span class="syn-prog">${s.done}/${s.total}</span>
+    </div>`;
+  }).join("");
+  const pct = totalChecks ? Math.round((totalDone / totalChecks) * 100) : 0;
+  return `<div class="synopsis-title">📋 Requirements Checklist</div>
+    <div class="synopsis-sub">Tap a requirement to jump to that page. Items check off as you fill in your work.</div>
+    ${rows}
+    <div class="syn-bar"><div class="syn-bar-fill" style="width:${pct}%"></div></div>
+    <div class="syn-overall">Overall progress: <strong>${totalDone}/${totalChecks}</strong> (${pct}%)</div>`;
+}
+
+function renderSynopsis() {
+  return `<div class="synopsis" id="synopsis">${renderSynopsisInner()}</div>`;
+}
+
+function updateChecklists() {
+  document.querySelectorAll("[data-checklist]").forEach(el => {
+    el.innerHTML = renderChecklistInner(el.getAttribute("data-checklist"));
+  });
+  const syn = document.getElementById("synopsis");
+  if (syn) syn.innerHTML = renderSynopsisInner();
+}
 
 function field(label, key, opts = {}) {
   const v = data[key] || "";
@@ -127,6 +288,7 @@ function renderCover() {
   ];
   return `
     <div class="cover-title"><h1>FOLLOW THE FUN</h1><div class="bar"></div><div style="font-size:14px;color:#64748b">Game Design Notebook</div><div style="font-size:12px;color:#64748b">Game Design Merit Badge</div></div>
+    ${renderSynopsis()}
     ${field("Scout Name", "scoutName", { placeholder: "Your name" })}
     ${field("Troop / Pack", "troop", { placeholder: "Troop number" })}
     ${field("Date", "date", { placeholder: "Today's date" })}
@@ -151,6 +313,7 @@ function renderA1() {
     { key: "rules", label: "Rules", hint: "Constraints and mechanics" },
   ];
   return `${sectionHeader("Activity 1: Break a Game You Love", "Workbook Page 2 • Requirement 1a", "#059669")}
+    ${renderChecklist("1a")}
     <div style="font-size:13px;color:#64748b;margin-bottom:12px">Pick a game your whole group knows. Identify the six Game Elements.</div>
     ${field("Game Title", "a1_title", { placeholder: "e.g. Fortnite, Minecraft, Uno..." })}
     ${field("Medium", "a1_medium", { placeholder: "board / card / video / physical", small: true })}
@@ -161,6 +324,7 @@ function renderA1() {
 function renderA2() {
   const terms = ["Story","Setting","Characters","Play Sequence","Level Design","Interface Design","Difficulty","Balance","Depth","Pace","Replay Value","Age Appropriateness","Single vs. Multi","Coop vs. Competitive","Turn-based vs. Real-time","Strategy vs. Reflex vs. Chance","Abstract vs. Thematic"];
   let html = `${sectionHeader("Activity 2: Design Terms", "Workbook Page 3 • Requirement 2", "#059669")}
+    ${renderChecklist("2")}
     <div style="font-size:12px;color:#64748b;margin-bottom:8px">Circle 5 terms that interest you:</div>
     <div class="tag-row">${terms.map(t => `<span class="tag">${t}</span>`).join("")}</div>`;
   for (let i = 1; i <= 5; i++) {
@@ -175,6 +339,7 @@ function renderA2() {
 function renderA3() {
   const changes = [{ num: 1, rule: "Rock beats everything" }, { num: 2, rule: "You can delay your throw by one beat" }, { num: 3, rule: "Your group invents a change" }];
   return `${sectionHeader("Activity 3: Rule Hacking", "Workbook Page 4 • Requirement 4", "#059669")}
+    ${renderChecklist("4")}
     <div style="font-size:13px;color:#64748b;margin-bottom:12px">Game: <strong>Rock Paper Scissors</strong></div>
     ${changes.map(c => `<div class="card card-accent">
       <div style="font-size:12px;font-weight:700;margin-bottom:8px">RULE CHANGE ${c.num}: ${c.rule}</div>
@@ -188,6 +353,7 @@ function renderA4() {
   const goals = ["Tension","Mastery","Surprise","Cooperation","Push-your-luck","Speed","Puzzle","Flow"];
   const selected = (data.a4_goals || "").split(",").map(s => s.trim()).filter(Boolean);
   return `${sectionHeader("Activity 4: Design Your Game", "Workbook Pages 5–6 • Requirement 5", "#059669")}
+    ${renderChecklist("5")}
     ${field("Vision Statement (2–3 sentences)", "a4_vision", { multiline: true, placeholder: "What is this game and why should someone play it?" })}
     <div class="grid-2">
       ${field("Game Name", "a4_name", { small: true, placeholder: "Title" })}
@@ -212,6 +378,7 @@ function renderA4() {
 function renderPT() {
   const colors = ["#0891b2", "#f59e0b", "#059669"];
   return `${sectionHeader("Playtest Log", "Workbook Page 7 • Requirement 6", "#059669")}
+    ${renderChecklist("6")}
     ${[1,2,3].map((r, i) => `<div class="card" style="border-left:3px solid ${colors[i]}">
       <div style="font-size:13px;font-weight:700;margin-bottom:8px">PLAYTEST ROUND ${r}</div>
       ${field("Players", `pt${r}_players`, { small: true, placeholder: "Who played?" })}
@@ -225,6 +392,7 @@ function renderPT() {
 
 function renderBT() {
   return `${sectionHeader("The Blind Test", "Workbook Page 8 • Requirement 7", "#059669")}
+    ${renderChecklist("7")}
     <div style="font-size:13px;font-weight:600;margin-bottom:4px">Instruction Sheet</div>
     <div style="font-size:11px;color:#64748b;margin-bottom:10px">Write everything someone needs to play without your help.</div>
     ${field("How to SET UP the game", "bt_setup", { multiline: true, placeholder: "Starting positions, deal cards..." })}
@@ -243,6 +411,7 @@ function renderBT() {
 
 function renderRef() {
   return `${sectionHeader("Reflection + Sign-Off", "Workbook Page 9 • Requirement 8b", "#1a1f36")}
+    ${renderChecklist("8b")}
     <div style="font-size:13px;font-weight:600;margin-bottom:8px">Three things I learned today:</div>
     ${field("1.", "reflect1", { multiline: true, placeholder: "I learned that..." })}
     ${field("2.", "reflect2", { multiline: true, placeholder: "I learned that..." })}
@@ -257,6 +426,7 @@ function renderRef() {
 
 function renderPB() {
   let html = `${sectionHeader("Plan B: Take-Home", "Requirements 1a, 1b, and 3", "#64748b")}
+    ${renderChecklist(["1b","3"])}
     <div style="font-size:12px;color:#64748b;margin-bottom:12px;font-style:italic">Complete these with your regular counselor if needed.</div>
     <div style="font-size:13px;font-weight:700;margin-bottom:8px">Req 1a: Three More Games</div>`;
   for (let g = 2; g <= 4; g++) {
@@ -275,6 +445,11 @@ function renderPB() {
     ${field("Three types of IP in games", "pb_ip_types", { multiline: true })}
     ${field("Why is IP protection necessary?", "pb_ip_why", { multiline: true })}
     ${field("Licensed property example", "pb_ip_example", { placeholder: "e.g. Star Wars Lego sets" })}
+    <div class="cb-group-title">IP Discussion — Counselor Check-In</div>
+    <div class="cb-group-sub">Tap each box once your counselor has talked through it with you.</div>
+    ${checkbox("pb_ip_chk_fair", "My counselor explained infringement vs. fair use")}
+    ${checkbox("pb_ip_chk_conseq", "My counselor explained the consequences of IP infringement")}
+    ${checkbox("pb_ip_chk_copying", "My counselor explained whether I can copy other people's ideas")}
     <div class="colophon"><strong style="color:#1e293b">About These Materials</strong><br>Curriculum by Tim Lindsey, SCAD Atlanta. ~30 years professional game development.<br>Materials produced with AI assistance (Anthropic Claude) under author's creative direction.<br><em>The AI is a tool — like a pencil or a game engine. You are the designer.</em></div>`;
   return html;
 }
