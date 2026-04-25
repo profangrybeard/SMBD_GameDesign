@@ -1,0 +1,119 @@
+FOLLOW THE FUN — Game Design Notebook
+Scout: Riley Thompson
+Troop: 42
+Date: 2026-04-25
+
+========================================
+ACTIVITY 1: GAME ELEMENTS (Req 1a)
+========================================
+Game: Mario Kart
+Medium: video game
+Objects: Karts, items (banana, shell, mushroom), coins, the track itself
+Actions: Drive, drift, throw items, pick up boxes, dodge
+Play Space: The race track — has lanes, shortcuts, and obstacles
+Players: 1 to 4 racers (or up to 12 with computer-controlled)
+Goals: Finish the race in 1st place across 3 laps
+Rules: Stay on the track, you can't drive backward, items only work in front of you, falling off respawns you
+Discussion: We argued whether 'coins' counted as objects or part of the rules — Jamie said they're objects you collect, I said the bonus speed is a rule effect. Eli broke the tie: both.
+
+========================================
+ACTIVITY 2: DESIGN TERMS (Req 2)
+========================================
+Term 1: Pace
+  Game: Tetris
+  How: Tetris keeps speeding up — the pace gets faster each level so it always feels intense
+Term 2: Difficulty
+  Game: Dark Souls
+  How: Lets you fail a lot but each death teaches you something — the difficulty IS the point
+Term 3: Replay Value
+  Game: Minecraft
+  How: Every world is different so you never run out of new things to build
+Term 4: Coop vs. Competitive
+  Game: Overcooked
+  How: You HAVE to work together or the kitchen falls apart — even though it makes you yell
+Term 5: Story
+  Game: Breath of the Wild
+  How: The story unfolds based on which order you do things — feels personal
+
+========================================
+ACTIVITY 3: RULE HACKING (Req 4)
+========================================
+Rule Change 1:
+  Prediction: Everyone will just throw rock all the time and games will be boring
+  Result: First few rounds yes, but then people started faking out — one kid threw paper anyway as a joke and it got really funny
+  Feeling: Less strategic, more silly. Like the game broke on purpose.
+Rule Change 2:
+  Prediction: Whoever throws second always wins because they see the other person's hand
+  Result: Pretty much yes — but the person who waited too long got accused of cheating. We had to add a rule about how long you could delay.
+  Feeling: Tense and a little annoying — the game stopped being about reading people and started being about waiting.
+Rule Change 3:
+  Prediction: Will make matches longer but more fair so one bad throw doesn't lose it
+  Result: Yes — and the wild-card move (jazz hands = beats anything once per match) made it really exciting because you had to decide WHEN to use it
+  Feeling: Way more strategy. People started bluffing about whether they'd already used the wild card.
+
+========================================
+ACTIVITY 4: DESIGN YOUR GAME (Req 5)
+========================================
+Vision: Dragon Hoard is a 2-4 player card game where each player is a dragon trying to build the biggest treasure pile. You play in 10 minutes and every game ends with a tense final turn where someone might steal everything.
+Name: Dragon Hoard
+Players: 2-4
+Medium: Card game
+Time: 10-15 min
+Theme: Greedy dragons collecting shiny stuff
+Goals: Push-your-luck, Tension
+Core Loop:
+  Step 1: Draw 2 cards from the hoard pile
+  Step 2: Decide: keep them safe, or risk stealing from another dragon?
+  Step 3: Play your action card face-down
+  Step 4: All players flip — resolve thefts in age order
+  Step 5: Score gems on cards still in your hoard, check if anyone hit 25
+Rules: 1. You must draw at least 1 card per turn.
+2. You can only steal from dragons with bigger hoards than you.
+3. If two dragons steal from each other on the same turn, neither succeeds.
+4. First to 25 gems triggers the final round.
+5. Knight cards force you to discard your top card.
+Resources: 60 cards: 30 treasure (gems), 15 action cards (steal/defend), 10 knights, 5 wild dragons. 4 player mats. Score tokens.
+
+========================================
+PLAYTEST LOG (Req 6)
+========================================
+Round 1:
+  Worked: The pushing-your-luck part was fun — Sam laughed when he stole my whole stack
+  Broken: First-player advantage was huge. Whoever went first won twice in a row.
+  Changed: Whoever has the smallest hoard goes first each round
+  Why: To balance out the lead — give the loser a chance to catch up
+  Result: Way better. Games stayed close until the end.
+Round 2:
+  Worked: Knight cards added great panic moments. The reaction when one came out was the best part.
+  Broken: Mom said the rules took 5 minutes to explain — too many phases per turn
+  Changed: Combined steps 3 and 4 — everyone plays AND flips at the same time
+  Why: Cut a step out. Less to remember = faster turns.
+  Result: Game went from 20 min to 12 min. Still felt strategic.
+Round 3:
+  Worked: Bluffing! Asher faked having a knight for two rounds and we all believed him
+  Broken: The wild-dragon cards were too strong — whoever got one usually won
+  Changed: Wild dragons can only be played in the final round
+  Why: Save the big swing for the climax instead of letting it decide things early
+  Result: Made the final round HUGELY tense. This is the version I'm submitting.
+
+========================================
+BLIND TEST (Req 7)
+========================================
+Setup: Shuffle all 60 cards into one deck. Deal 3 cards face-down to each dragon as their starting hoard. Each player picks a dragon mat. Place score tokens in the middle. Smallest hoard goes first (random for round 1).
+Play: On your turn: 1) Draw 2 cards from the deck. 2) Look at your hand. 3) Choose ONE action card (steal, defend, hoard) and place it face-down. 4) When everyone is ready, all players flip at once. Steals resolve youngest player first. Then count any gems revealed and add to your score.
+Win: First player to score 25 gems triggers the final round. Everyone else gets one more turn. Highest score wins. Ties go to whoever has the fewest knight cards on their mat.
+Misunderstood: They thought 'defend' protected forever, not just the current turn. We had to explain it 3 times.
+Unexpected: One player stockpiled cards face-down without ever attacking — turtling. We didn't think anyone would do that.
+Stuck: When two players both played 'steal' on each other. The rules say neither succeeds, but they assumed it would be a duel.
+Fun Moment: Round 4 — when Asher pulled out a wild dragon at exactly 24 points and won. Whole table erupted.
+Like Most: The bluffing. Card games where you have to read people are way more fun than just luck or just math. Dragon Hoard has both.
+Change: Add a rules card players keep at their seat — explaining it is the slowest part. Also rename 'turtling' to a real strategy with a card name.
+
+========================================
+REFLECTION (Req 8b)
+========================================
+1: I learned that a game can be 'broken' in fun ways and not-fun ways. Rock-beats-everything was broken-funny. First-player advantage was broken-bad.
+2: I learned that explaining rules out loud is the hardest part — even rules I wrote myself. Now I get why every game I own has a quick-reference card.
+3: I learned that the FEELING of the game (the panic, the bluff, the laugh) matters more than the rules. The rules are just there to make those feelings happen.
+
+— Follow the Fun • timlindsey.com —

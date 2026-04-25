@@ -104,6 +104,18 @@ input, textarea, button, select { font-family: 'Outfit', sans-serif; }
 <div class="container" id="app"></div>
 <script>
 const STORAGE_KEY = "ftf-workbook-v1";
+// Cloudflare Worker URL (see worker.js for deploy instructions). When set,
+// Next clicks and Export actions silently sync each scout's submission to
+// the Drive folder configured in the Worker. Leave empty to disable cloud
+// save — the form still works fully via localStorage.
+const SAVE_URL = "";
+// Must match the SHARED_SECRET secret you set on the Worker. It's not
+// real security (anyone viewing source can read it), just a basic gate
+// to keep random bots from spamming the endpoint.
+const SHARED_SECRET = "";
+// Destination address for the Submit button. Tapping it opens the scout's
+// mail app with the notebook pre-filled — zero backend setup.
+const RECIPIENT_EMAIL = "rindsey@gmail.com";
 let data = {};
 let pageIdx = 0;
 let showNavDD = false;
@@ -491,6 +503,7 @@ function formatExport() {
 }
 
 function doDownload() {
+  cloudSave();
   const name = (data.scoutName || "scout").replace(/\s+/g, "_").toLowerCase();
   const blob = new Blob([formatExport()], { type: "text/plain" });
   const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
@@ -498,6 +511,7 @@ function doDownload() {
 }
 
 function doCopy() {
+  cloudSave();
   const ta = document.createElement("textarea"); ta.value = formatExport();
   ta.style.cssText = "position:fixed;left:-9999px"; document.body.appendChild(ta);
   ta.select(); document.execCommand("copy"); document.body.removeChild(ta);
@@ -506,12 +520,68 @@ function doCopy() {
 }
 
 function doShare() {
+  cloudSave();
   if (navigator.share) {
     navigator.share({ title: `Game Design Notebook — ${data.scoutName || "Scout"}`, text: formatExport() }).catch(() => {});
   } else { doCopy(); }
 }
 
-function goTo(i) { pageIdx = i; showNavDD = false; render(); window.scrollTo(0, 0); }
+function doEmail() {
+  cloudSave();
+  const scout = data.scoutName || "Scout";
+  const troopBit = data.troop ? ` — Troop ${data.troop}` : "";
+  const subject = `Game Design Notebook — ${scout}${troopBit}`;
+  const body = formatExport();
+  let url = `mailto:${RECIPIENT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  // Many mail clients truncate mailto URLs around 2KB. Modern mobile apps
+  // tolerate ~6KB. If we'd blow past that, trim the body and also kick off
+  // the .txt download so the scout can attach the complete file.
+  if (url.length > 7000) {
+    const note = "\n\n[The complete notebook was downloaded as a .txt file. Please attach it to this email before sending.]";
+    const trimmed = body.slice(0, 4500) + "\n\n--- (continued in attached file) ---" + note;
+    url = `mailto:${RECIPIENT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(trimmed)}`;
+    doDownload();
+  }
+  const a = document.createElement("a");
+  a.href = url;
+  a.rel = "noopener";
+  a.click();
+}
+
+function goTo(i) {
+  // If we're advancing forward (Next), fire a silent cloud save.
+  if (i > pageIdx) cloudSave();
+  pageIdx = i; showNavDD = false; render(); window.scrollTo(0, 0);
+}
+
+// ─── INVISIBLE CLOUD SAVE ───
+// Sends a silent fire-and-forget POST to the Apps Script Web App.
+// Fails silently if SAVE_URL is empty or the network is offline — localStorage still has the data.
+let lastCloudSaveTs = 0;
+function cloudSave() {
+  if (!SAVE_URL) return;
+  const now = Date.now();
+  if (now - lastCloudSaveTs < 1500) return; // light debounce so back-to-back clicks don't spam
+  lastCloudSaveTs = now;
+  const payload = {
+    secret: SHARED_SECRET,
+    scoutName: data.scoutName || "anonymous",
+    troop: data.troop || "",
+    date: data.date || new Date().toISOString().slice(0, 10),
+    timestamp: new Date().toISOString(),
+    exportText: formatExport(),
+    data: data,
+  };
+  try {
+    fetch(SAVE_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload),
+      keepalive: true,
+    }).catch(() => {});
+  } catch (e) { /* silent */ }
+}
 
 function render() {
   const page = pages[pageIdx];
@@ -520,7 +590,7 @@ function render() {
     <div class="header">
       <div style="display:flex;align-items:center"><span class="header-title">Follow the Fun</span><span class="header-saved" id="saved-indicator">✓ Saved</span></div>
       <div class="header-right">
-        <button class="btn-export" onclick="showExportModal=true;render()">📤 Export</button>
+        <button class="btn-export" onclick="showExportModal=true;render()">✉️ Submit</button>
         <button class="btn-nav-toggle" onclick="showNavDD=!showNavDD;render()">${pageIdx + 1}/${pages.length} ▾</button>
       </div>
     </div>
@@ -537,12 +607,13 @@ function render() {
     ${showExportModal ? `<div class="modal-overlay" onclick="if(event.target===this){showExportModal=false;render()}">
       <div class="modal">
         <div class="modal-header">
-          <div><div style="font-size:16px;font-weight:700">Export Your Work</div><div style="font-size:11px;color:#64748b;margin-top:2px">Save or share your notebook</div></div>
+          <div><div style="font-size:16px;font-weight:700">Submit Your Work</div><div style="font-size:11px;color:#64748b;margin-top:2px">Email it to your counselor — or save a copy</div></div>
           <button onclick="showExportModal=false;render()" style="background:#f1f5f9;border:none;border-radius:8px;padding:6px;cursor:pointer;font-size:16px">✕</button>
         </div>
         <div class="modal-buttons">
-          <button class="modal-btn" style="background:#059669;color:#fff;border:none" onclick="doDownload()">📄 Download .txt</button>
-          <button class="modal-btn" id="copy-btn" style="background:#fff;color:#1e293b;border:1.5px solid #1e293b" onclick="doCopy()">📋 Copy</button>
+          <button class="modal-btn" style="background:#059669;color:#fff;border:none" onclick="doEmail()">✉️ Email to Counselor</button>
+          <button class="modal-btn" style="background:#fff;color:#1e293b;border:1.5px solid #e2e8f0" onclick="doDownload()">📄 Download</button>
+          <button class="modal-btn" id="copy-btn" style="background:#fff;color:#1e293b;border:1.5px solid #e2e8f0" onclick="doCopy()">📋 Copy</button>
           <button class="modal-btn" style="background:#fff;color:#1e293b;border:1.5px solid #e2e8f0" onclick="doShare()">📤 Share</button>
         </div>
         <div class="modal-preview"><pre>${formatExport().replace(/</g,"&lt;")}</pre></div>
